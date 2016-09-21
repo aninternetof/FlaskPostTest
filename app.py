@@ -1,10 +1,10 @@
 from flask import Flask, request, render_template, Response, json
 app = Flask(__name__)
 import gevent
-from gevent.pywsgi import WSGIServer
-from gevent import monkey
+# from gevent.pywsgi import WSGIServer
+# from gevent import monkey
 from numpy import random
-monkey.patch_all()
+# monkey.patch_all()
 
 @app.route('/')
 def index():
@@ -36,9 +36,8 @@ def stream():
     print 'Something is connected!'
     return Response(event(), mimetype="text/event-stream")
 
-# if __name__ == "__main__":
-#     app.run(host="192.168.20.61", debug=True, port=80)
-#     raw_input()
-#
 if __name__ == "__main__":
-    WSGIServer(('192.168.60.118', 80), app).serve_forever()
+    app.run(host="192.168.20.61", debug=True, port=80)
+
+# if __name__ == "__main__":
+#     WSGIServer(('192.168.60.118', 80), app).serve_forever()
