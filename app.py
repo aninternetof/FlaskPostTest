@@ -4,7 +4,11 @@ import gevent
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
 from numpy import random
-monkey.patch_all()
+monkey.patch_all
+
+class OurStatus:
+    def __init__(self, default):
+        self.status = default
 
 @app.route('/')
 def index():
@@ -16,7 +20,7 @@ def event():
     __ https://github.com/jakubroztocil/chat
     """
     while True:
-        yield 'data: ' + json.dumps(random.rand(2).tolist()) + '\n\n'
+        yield 'data: ' + json.dumps(current_status.status) + '\n\n'
         gevent.sleep(0.2)
 
 @app.route('/status', methods=['POST'])
@@ -25,6 +29,7 @@ def handlestatus():
     if not status:
         return ('Missing status value', 400)
     print "Got some status: " + status
+    current_status.status = status
     return ('', 200)
 
 @app.route('/status', methods=['GET'])
@@ -41,4 +46,5 @@ def stream():
 #     raw_input()
 #
 if __name__ == "__main__":
+    current_status = OurStatus("uninited")
     WSGIServer(('192.168.60.118', 80), app).serve_forever()
