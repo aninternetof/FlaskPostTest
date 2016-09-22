@@ -8,11 +8,13 @@ from werkzeug.serving import run_with_reloader
 from werkzeug.debug import DebuggedApplication
 monkey.patch_all
 
-class OurStatus:
-    def __init__(self, default):
-        self.status = default
+# class OurStatus:
+#     def __init__(self, default):
+#         self.status = default
+#
+# current_status = OurStatus("uninited")
 
-current_status = OurStatus("uninited")
+current_status = "uninitialized"
 
 @app.route('/')
 def index():
@@ -24,7 +26,8 @@ def event():
     __ https://github.com/jakubroztocil/chat
     """
     while True:
-        yield 'data: ' + json.dumps(current_status.status) + '\n\n'
+        global current_status
+        yield 'data: ' + json.dumps(current_status) + '\n\n'
         gevent.sleep(0.2)
 
 @app.route('/status', methods=['POST'])
@@ -33,7 +36,9 @@ def handlestatus():
     if not status:
         return ('Missing status value', 400)
     print "Got some status: " + status
-    current_status.status = status
+    # current_status.status = status
+    global current_status
+    current_status = status
     return ('', 200)
 
 @app.route('/status', methods=['GET'])
