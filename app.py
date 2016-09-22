@@ -4,11 +4,15 @@ import gevent
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
 from numpy import random
+from werkzeug.serving import run_with_reloader
+from werkzeug.debug import DebuggedApplication
 monkey.patch_all
 
 class OurStatus:
     def __init__(self, default):
         self.status = default
+
+current_status = OurStatus("uninited")
 
 @app.route('/')
 def index():
@@ -42,9 +46,13 @@ def stream():
     return Response(event(), mimetype="text/event-stream")
 
 # if __name__ == "__main__":
-#     app.run(host="192.168.20.61", debug=True, port=80)
-#     raw_input()
+#     current_status = OurStatus("uninited")
+#     app.run(host="192.168.60.118", debug=True, port=80)
 #
+
+@run_with_reloader
+def run_server():
+    WSGIServer(('192.168.60.118', 80), DebuggedApplication(app)).serve_forever()
+
 if __name__ == "__main__":
-    current_status = OurStatus("uninited")
-    WSGIServer(('192.168.60.118', 80), app).serve_forever()
+    run_server()
